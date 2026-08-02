@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HELI — Voice Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <div class="brand-name display">HELI</div>
+        <div class="brand-sub">voice agent</div>
+      </div>
+    </div>
+
+    <div class="nav-item active" data-view="hub">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3.2M12 18.8V22M22 12h-3.2M5.2 12H2M18.4 5.6l-2.3 2.3M7.9 16.1l-2.3 2.3M18.4 18.4l-2.3-2.3M7.9 7.9 5.6 5.6"/></svg>
+      <span>Command Hub</span>
+      <span class="nav-dot"></span>
+    </div>
+    <div class="nav-item" data-view="reminders">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+      <span>Reminders</span>
+      <span class="nav-dot"></span>
+    </div>
+    <div class="nav-item" data-view="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.32.35.6.6.83"/></svg>
+      <span>Settings</span>
+      <span class="nav-dot"></span>
+    </div>
+
+    <div class="sidebar-status mono">
+      <div class="row"><span class="pulse-tiny"></span> mic: idle</div>
+      <div class="row">wake word: "Hey HELI"</div>
+      <div>4 integrations linked</div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- ===== COMMAND HUB ===== -->
+    <div class="view active" id="view-hub">
+      <div class="page-head">
+        <div class="page-head-text">
+          <div class="eyebrow mono">Command Hub</div>
+          <div class="page-title display">Say the word, HELI's listening.</div>
+          <div class="page-desc">Wake HELI with your voice or tap the orb, then speak a command — email, search, reminders, or app control.</div>
+        </div>
+      </div>
+
+      <div class="hub-grid">
+        <div class="orb-card">
+          <div class="orb-wrap" id="orbWrap">
+            <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+            <div class="orb" id="orbBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-ink)" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg>
+            </div>
+          </div>
+          <div class="orb-state" id="orbState">Tap to wake HELI, or just say "Hey HELI"</div>
+          <div class="waveform" id="waveform"></div>
+
+          <!-- Mic sensitivity control -->
+          <div class="mic-sense">
+            <label for="micSenseSlider">Mic sensitivity</label>
+            <input type="range" id="micSenseSlider" min="0" max="100" value="60">
+            <output id="micSenseOutput">60%</output>
+          </div>
+
+          <div class="wake-hint">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/></svg>
+            Wake phrase: <b>"Hey HELI"</b>
+          </div>
+          <div class="chips">
+            <div class="chip" data-cmd="email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Draft an email</div>
+            <div class="chip" data-cmd="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Search the web</div>
+            <div class="chip" data-cmd="remind"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>Set a reminder</div>
+            <div class="chip" data-cmd="app"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Open an app</div>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="panel">
+            <div class="panel-title">Active tasks <span class="count" id="taskCount">2</span></div>
+            <div id="taskList">
+              <div class="task-item">
+                <div class="task-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div>
+                <div class="task-body">
+                  <div class="task-title">Reply to Priya — project timeline</div>
+                  <div class="task-meta">Drafting from voice note · Gmail</div>
+                </div>
+                <div class="task-status running">drafting</div>
+              </div>
+              <div class="task-item">
+                <div class="task-icon violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div>
+                <div class="task-body">
+                  <div class="task-title">Best noise-cancelling headphones 2026</div>
+                  <div class="task-meta">Summarizing 6 sources</div>
+                </div>
+                <div class="task-status done">done</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">Command history <span class="count">today</span></div>
+            <div class="panel-toolbar">
+              <input type="text" class="search-input" id="historySearch" placeholder="Filter history...">
+              <button class="btn-ghost" id="clearHistoryBtn">Clear</button>
+            </div>
+            <div id="historyList">
+              <div class="history-item">
+                <div class="history-cmd mono">"<span class="quote">Set a reminder for the dentist Thursday 3pm</span>"</div>
+                <div class="history-time">9:42 AM · Reminders</div>
+              </div>
+              <div class="history-item">
+                <div class="history-cmd mono">"<span class="quote">Open Spotify and play focus playlist</span>"</div>
+                <div class="history-time">9:15 AM · App control</div>
+              </div>
+              <div class="history-item">
+                <div class="history-cmd mono">"<span class="quote">Hey HELI, what's on my calendar today</span>"</div>
+                <div class="history-time">8:58 AM · Schedule</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== REMINDERS ===== -->
+    <div class="view" id="view-reminders">
+      <div class="page-head">
+        <div class="page-head-text">
+          <div class="eyebrow mono">Reminders &amp; Schedule</div>
+          <div class="page-title display">Nothing slips past HELI.</div>
+          <div class="page-desc">Everything you've asked HELI to remember, in one place.</div>
+        </div>
+      </div>
+
+      <div class="rem-grid">
+        <div class="panel" style="padding-bottom:20px;">
+          <div class="panel-title">Upcoming <span class="count">4</span></div>
+
+          <!-- Add reminder form -->
+          <form class="add-rem-form" id="addRemForm">
+            <input type="text" id="remTextInput" placeholder="Remind me to..." required>
+            <input type="date" id="remDateInput">
+            <input type="time" id="remTimeInput">
+            <select id="remPriorityInput">
+              <option value="low">Low</option>
+              <option value="med" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+            <button type="submit" class="btn-add">Add</button>
+          </form>
+
+          <!-- Filter tabs -->
+          <div class="filter-tabs">
+            <div class="filter-tab active" data-filter="all">All</div>
+            <div class="filter-tab" data-filter="pending">Pending</div>
+            <div class="filter-tab" data-filter="done">Completed</div>
+          </div>
+
+          <div id="remList">
+            <div class="rem-list-item">
+              <div class="rem-check" data-checked="0"></div>
+              <div class="rem-info">
+                <div class="rem-title-row"><span class="priority-dot high"></span><div class="rem-title">Dentist appointment</div></div>
+                <div class="rem-time">Thu, Aug 6 · 3:00 PM</div>
+              </div>
+              <div class="rem-actions">
+                <div class="icon-btn" title="Snooze"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg></div>
+                <div class="icon-btn" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></div>
+              </div>
+            </div>
+            <div class="rem-list-item">
+              <div class="rem-check checked" data-checked="1"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-ink)" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="rem-info">
+                <div class="rem-title-row"><span class="priority-dot low"></span><div class="rem-title strike">Pay electricity bill</div></div>
+                <div class="rem-time">Completed Aug 1</div>
+              </div>
+              <div class="rem-actions">
+                <div class="icon-btn" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></div>
+              </div>
+            </div>
+            <div class="rem-list-item">
+              <div class="rem-check" data-checked="0"></div>
+              <div class="rem-info">
+                <div class="rem-title-row"><span class="priority-dot med"></span><div class="rem-title">Call mom</div></div>
+                <div class="rem-time">Today · 7:00 PM</div>
+              </div>
+              <div class="rem-actions">
+                <div class="icon-btn" title="Snooze"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg></div>
+                <div class="icon-btn" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></div>
+              </div>
+            </div>
+            <div class="rem-list-item">
+              <div class="rem-check" data-checked="0"></div>
+              <div class="rem-info">
+                <div class="rem-title-row"><span class="priority-dot med"></span><div class="rem-title">Team standup — Zoom</div></div>
+                <div class="rem-time">Tomorrow · 10:00 AM</div>
+              </div>
+              <div class="rem-actions">
+                <div class="icon-btn" title="Snooze"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg></div>
+                <div class="icon-btn" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="panel">
+            <div class="panel-title">August 2026</div>
+            <div class="mini-cal" id="miniCal"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Completed this week</div>
+            <div class="completion-chart" id="chart"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS ===== -->
+    <div class="view" id="view-settings">
+      <div class="page-head">
+        <div class="page-head-text">
+          <div class="eyebrow mono">Settings &amp; Integrations</div>
+          <div class="page-title display">Shape how HELI listens and acts.</div>
+          <div class="page-desc">Voice behavior, connected accounts, permissions, and HELI's personality.</div>
+        </div>
+      </div>
+
+      <div class="settings-grid">
+        <div class="panel">
+          <div class="panel-title">Voice</div>
+          <div class="field-row">
+            <div><div class="field-label">Wake word</div><div class="field-sub">Phrase that activates HELI</div></div>
+            <input class="hinput" value="Hey HELI">
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">Always listening</div><div class="field-sub">Mic stays on for the wake word</div></div>
+            <div class="toggle on" data-toggle></div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">Voice response</div><div class="field-sub">HELI replies out loud, not just on screen</div></div>
+            <div class="toggle on" data-toggle></div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">Voice</div><div class="field-sub">Text-to-speech style</div></div>
+            <select class="hselect"><option>Calm — neutral</option><option>Warm — narrator</option><option>Crisp — assistant</option></select>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">Recognition language</div><div class="field-sub">Language HELI listens for</div></div>
+            <select class="hselect" id="langSelect">
+              <option>English (US)</option>
+              <option>English (UK)</option>
+              <option>Hindi</option>
+              <option>Telugu</option>
+              <option>Spanish</option>
+            </select>
+          </div>
+          <div class="field-row column">
+            <div><div class="field-label">Speech rate</div><div class="field-sub">How fast HELI talks back</div></div>
+            <div class="slider-row">
+              <input type="range" min="0.5" max="2" step="0.1" value="1" data-live="rateOut" data-suffix="x" id="rateSlider">
+              <span class="slider-value" id="rateOut">1x</span>
+            </div>
+          </div>
+          <div class="field-row column">
+            <div><div class="field-label">Assistant volume</div><div class="field-sub">Playback volume for spoken replies</div></div>
+            <div class="slider-row">
+              <input type="range" min="0" max="100" step="5" value="75" data-live="volOut" data-suffix="%" id="volSlider">
+              <span class="slider-value" id="volOut">75%</span>
+            </div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">Test wake word</div><div class="field-sub">Simulate a wake-word detection</div></div>
+            <button class="btn-mini" id="testWakeBtn">Test</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Connected accounts</div>
+          <div class="connect-row">
+            <div class="connect-logo">✉</div>
+            <div class="connect-info"><div class="connect-name">Gmail</div><div class="connect-status linked">Connected — read &amp; send</div></div>
+            <div class="btn-mini">Manage</div>
+          </div>
+          <div class="connect-row">
+            <div class="connect-logo">◧</div>
+            <div class="connect-info"><div class="connect-name">Google Calendar</div><div class="connect-status linked">Connected</div></div>
+            <div class="btn-mini">Manage</div>
+          </div>
+          <div class="connect-row">
+            <div class="connect-logo">⌘</div>
+            <div class="connect-info"><div class="connect-name">App control</div><div class="connect-status linked">3 apps permitted</div></div>
+            <div class="btn-mini">Manage</div>
+          </div>
+          <div class="connect-row">
+            <div class="connect-logo">◔</div>
+            <div class="connect-info"><div class="connect-name">Outlook</div><div class="connect-status off">Not connected</div></div>
+            <div class="btn-mini primary">Connect</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Permissions</div>
+          <div class="field-row">
+            <div><div class="field-label">Send emails without confirmation</div><div class="field-sub">Off = HELI drafts, you approve before sending</div></div>
+            <div class="toggle" data-toggle></div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">Open &amp; close apps</div><div class="field-sub">Allow HELI to launch or quit applications</div></div>
+            <div class="toggle on" data-toggle></div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">Browse the web</div><div class="field-sub">Allow HELI to search and summarize pages</div></div>
+            <div class="toggle on" data-toggle></div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">Access contacts</div><div class="field-sub">Let HELI resolve names to email addresses</div></div>
+            <div class="toggle on" data-toggle></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Notifications</div>
+          <div class="check-list">
+            <label class="check-item"><div class="check-box checked"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-ink)" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></div> Email drafted <span class="sub">on screen</span></label>
+            <label class="check-item"><div class="check-box checked"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-ink)" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></div> Reminder due <span class="sub">sound + banner</span></label>
+            <label class="check-item"><div class="check-box"></div> App opened <span class="sub">silent</span></label>
+            <label class="check-item"><div class="check-box checked"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-ink)" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></div> Web search complete <span class="sub">banner</span></label>
+          </div>
+        </div>
+
+        <div class="panel span-2">
+          <div class="panel-title">HELI's personality &amp; theme</div>
+          <div class="field-sub" style="margin-bottom:4px;">Tone HELI uses when it talks to you</div>
+          <div class="persona-tags">
+            <div class="persona-tag selected">Direct &amp; efficient</div>
+            <div class="persona-tag">Warm &amp; encouraging</div>
+            <div class="persona-tag">Dry &amp; witty</div>
+            <div class="persona-tag">Formal</div>
+          </div>
+          <div class="field-sub" style="margin:18px 0 4px;">Accent color</div>
+          <div class="swatch-row">
+            <div class="swatch cyan selected" data-theme="cyan" title="Cyan"></div>
+            <div class="swatch violet" data-theme="violet" title="Violet"></div>
+            <div class="swatch amber" data-theme="amber" title="Amber"></div>
+            <div class="swatch rose" data-theme="rose" title="Rose"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
